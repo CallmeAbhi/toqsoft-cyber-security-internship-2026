@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XSS Presentation Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Set a dummy cookie so the "Steal Cookie" payload has something to steal
+        document.cookie = "session_token=SUPER_SECRET_ADMIN_TOKEN_9982; path=/";
+    </script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen p-8 font-sans">
+
+    <div class="max-w-5xl mx-auto">
+        <header class="mb-8 border-b border-slate-700 pb-4">
+            <h1 class="text-3xl font-bold text-blue-400">Cross-Site Scripting (XSS) Simulator</h1>
+            <p class="text-slate-400 mt-2">Live Demonstration Environment</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <div class="bg-slate-800 p-6 rounded-lg shadow-xl border border-slate-700">
+                <h2 class="text-xl font-semibold mb-4 border-b border-slate-700 pb-2">1. Configure App</h2>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Security Mode</label>
+                    <select id="security-mode" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500 transition-colors">
+                        <option value="vulnerable">🔴 Vulnerable Mode (Direct innerHTML)</option>
+                        <option value="secure">🟢 Secure Mode (Text Content / Sanitized)</option>
+                    </select>
+                </div>
+
+                <h2 class="text-xl font-semibold mb-4 border-b border-slate-700 pb-2">2. Inject Payload</h2>
+                
+                <div class="space-y-3 mb-6">
+                    <p class="text-sm text-slate-400">Quick-Action Payloads (Click to inject):</p>
+                    
+                    <button onclick="injectPreset(1)" class="w-full text-left bg-slate-700 hover:bg-slate-600 p-2 rounded text-sm transition-colors">
+                        Normal HTML Formatting
+                    </button>
+                    <button onclick="injectPreset(2)" class="w-full text-left bg-red-900/50 hover:bg-red-800/50 border border-red-700/50 p-2 rounded text-sm transition-colors text-red-200">
+                        ⚡ Execute JavaScript (Alert Box)
+                    </button>
+                    <button onclick="injectPreset(3)" class="w-full text-left bg-red-900/50 hover:bg-red-800/50 border border-red-700/50 p-2 rounded text-sm transition-colors text-red-200">
+                        🍪 Steal Session Cookie
+                    </button>
+                    <button onclick="injectPreset(4)" class="w-full text-left bg-orange-900/50 hover:bg-orange-800/50 border border-orange-700/50 p-2 rounded text-sm transition-colors text-orange-200">
+                        🏴‍☠️ Complete Page Defacement
+                    </button>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Manual Input Area</label>
+                    <textarea id="user-input" rows="3" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white font-mono text-sm focus:outline-none focus:border-blue-500" placeholder="Type your comment or payload here..."></textarea>
+                </div>
+                
+                <button onclick="submitComment()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded transition-colors">
+                    Render Output
+                </button>
+            </div>
+
+            <div class="bg-slate-100 text-slate-900 p-6 rounded-lg shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full bg-slate-300 px-4 py-2 text-xs font-bold text-slate-600 uppercase tracking-widest border-b border-slate-400">
+                    Simulated Browser DOM Rendering
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="text-2xl font-bold mb-4">User Comments</h3>
+                    <div id="output-area" class="bg-white p-4 rounded border border-slate-300 min-h-[100px] shadow-inner break-words">
+                        <em>Submit a payload to see how the browser renders it.</em>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-4 bg-slate-200 rounded border-l-4 border-blue-500 text-sm">
+                    <strong>Behind the scenes:</strong><br>
+                    <span id="code-explanation" class="font-mono text-xs text-slate-700 mt-2 block">
+                        Waiting for input...
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // FIX: Store payloads securely in JavaScript to prevent HTML from breaking
+        const payloads = {
+            1: "<h1>Hello! This is normal HTML.</h1>",
+            2: "<img src='x' onerror='alert(\"XSS Attack Executed Successfully!\")'>",
+            3: "<img src='x' onerror='alert(\"Stolen Cookies: \" + document.cookie)'>",
+            4: "<div style='position:fixed; top:0; left:0; width:100%; height:100%; background:red; z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column;'><h1 style='font-size:5rem; color:black; font-weight:bold;'>SITE DEFACED</h1><p style='color:white; font-size:2rem;'>You have been hacked.</p><button onclick='location.reload()' style='margin-top:20px; padding:10px 20px; color:black; background:white; border-radius: 5px; cursor: pointer;'>Fix It</button></div>"
+        };
+
+        function injectPreset(id) {
+            document.getElementById('user-input').value = payloads[id];
+            submitComment();
+        }
+
+        function submitComment() {
+            const input = document.getElementById('user-input').value;
+            const mode = document.getElementById('security-mode').value;
+            const outputArea = document.getElementById('output-area');
+            const explanationArea = document.getElementById('code-explanation');
+
+            // Reset the output area to trigger animations/events cleanly every time
+            outputArea.innerHTML = '';
+            outputArea.textContent = '';
+
+            if (mode === 'vulnerable') {
+                // VULNERABLE: Direct HTML insertion allows script execution
+                outputArea.innerHTML = input;
+                explanationArea.innerText = `element.innerHTML = "${input}"\n\nResult: The browser parsed the input as executable HTML/JavaScript.`;
+                explanationArea.parentElement.className = "mt-8 p-4 bg-red-100 rounded border-l-4 border-red-500 text-sm";
+            } else {
+                // SECURE: textContent safely escapes HTML entities
+                outputArea.textContent = input;
+                explanationArea.innerText = `element.textContent = "${input}"\n\nResult: The browser safely treated the input as raw text. HTML entities were neutralized.`;
+                explanationArea.parentElement.className = "mt-8 p-4 bg-green-100 rounded border-l-4 border-green-500 text-sm";
+            }
+        }
+    </script>
+</body>
+</html>

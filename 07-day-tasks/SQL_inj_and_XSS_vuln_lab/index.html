@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQLi Practice</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background-color: #222; color: white; }
+        .container { background: #333; padding: 20px; border-radius: 8px; display: inline-block; box-shadow: 0 4px 8px rgba(0,0,0,0.5); }
+        input, select { margin: 10px; padding: 10px; border-radius: 4px; border: none; font-size: 16px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #e74c3c; color: white; border: none; border-radius: 4px; }
+        button:hover { background: #c0392b; }
+        #result { margin-top: 20px; font-weight: bold; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>System Login</h2>
+        <input type="text" id="username" placeholder="Username" autocomplete="off"><br>
+        
+        <select id="mode">
+            <option value="/vulnerable-login">Vulnerable Mode</option>
+            <option value="/secure-login">Secure Mode</option>
+        </select><br>
+
+        <button onclick="attemptLogin()">Login</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function attemptLogin() {
+            const username = document.getElementById('username').value;
+            const mode = document.getElementById('mode').value;
+            const resultDiv = document.getElementById('result');
+
+            // Send the request to our Node.js backend
+            const response = await fetch(`${mode}?username=${encodeURIComponent(username)}`);
+            const text = await response.text();
+            
+            resultDiv.innerText = text;
+        }
+    </script>
+</body>
+</html>
