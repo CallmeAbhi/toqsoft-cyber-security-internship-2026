@@ -1,0 +1,5 @@
+Website Availability Report
+===================================
+URL          : https://thisisnotarealwebsite123456.com
+Status       : DNS Lookup Failed
+Reason       : The domain name could not be resolved. Check the website address.
