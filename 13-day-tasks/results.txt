@@ -1,0 +1,10 @@
+Port Scan Report
+===================================
+Target IP    : 142.250.193.78
+
+Open Ports:
+Port 80    (HTTP) : OPEN
+Port 443   (HTTPS) : OPEN
+
+Scan Time    : 5.779 seconds
+Checked At   : 01-07-2026 00:00:25

@@ -1,5 +1,5 @@
 Website Availability Report
 ===================================
-URL          : https://thisisnotarealwebsite123456.com
+URL          : https://thsi website doesn't exist
 Status       : DNS Lookup Failed
 Reason       : The domain name could not be resolved. Check the website address.
